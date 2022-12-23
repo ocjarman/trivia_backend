@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const volleyball = require("volleyball");
+const { addUser, removeUser, getUser, getUsersInRoom } = require("./User");
 
 const cors = require("cors");
 const http = require("http");
@@ -35,17 +36,53 @@ io.on("connection", (socket) => {
   // socket id is player id
   console.log(`Player is connected: ${socket.id}`);
 
-  socket.on("join_room", (data) => {
-    console.log("joined room", data);
+  socket.on("join_room", ({ name, room }) => {
+    const { user } = addUser({ id: socket.id, name, room });
+    console.log("line 40", user);
 
-    socket.join(data);
+    socket.emit("message", {
+      user: "admin",
+      text: `${user.name},
+            welcome to room ${user.room}.`,
+    });
+
+    socket.broadcast.to(user.room).emit("message", {
+      user: "admin",
+      text: `${user.name}, has joined`,
+    });
+
+    socket.join(user.room);
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
   });
 
-  socket.on("send_message", (data) => {
-    // take the data received and broadcasts to others
-    console.log("received send event", data);
+  // let usernames = {};
+  // socket.on("setSocketId", (data) => {
+  //   console.log("setsocketid", { data });
+  //   const username = data.name;
+  //   const userId = data.userId;
+  //   usernames[username] = userId;
+  // });
 
-    socket.to(data.room).emit("receive_message", data);
+  // socket.on("send_message", (data) => {
+  //   // take the data received and broadcasts to others
+  //   console.log("received send event", data);
+
+  //   socket.to(data.room).emit("receive_message", data);
+  // });
+
+  socket.on("send_message", (message, callback) => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit("message", { user: user, text: message });
+
+    io.to(user.room).emit("roomData", {
+      room: user.room,
+      users: getUsersInRoom(user.room),
+    });
+    callback();
   });
 });
 
