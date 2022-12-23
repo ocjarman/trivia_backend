@@ -44,6 +44,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     // take the data received and broadcasts to others
     console.log("received send event", data);
+
     socket.to(data.room).emit("receive_message", data);
   });
 });
