@@ -36,11 +36,14 @@ io.on("connection", (socket) => {
   console.log(`Player is connected: ${socket.id}`);
 
   socket.on("join_room", (data) => {
+    console.log("joined room", data);
+
     socket.join(data);
   });
 
   socket.on("send_message", (data) => {
     // take the data received and broadcasts to others
+    console.log("received send event", data);
     socket.to(data.room).emit("receive_message", data);
   });
 });
