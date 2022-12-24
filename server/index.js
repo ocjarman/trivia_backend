@@ -42,8 +42,7 @@ io.on("connection", (socket) => {
 
     socket.emit("message", {
       user: "admin",
-      text: `${user.name},
-            welcome to room ${user.room}.`,
+      text: `${user.name}, welcome to room ${user.room}.`,
     });
 
     socket.broadcast.to(user.room).emit("message", {
@@ -59,30 +58,26 @@ io.on("connection", (socket) => {
     });
   });
 
-  // let usernames = {};
-  // socket.on("setSocketId", (data) => {
-  //   console.log("setsocketid", { data });
-  //   const username = data.name;
-  //   const userId = data.userId;
-  //   usernames[username] = userId;
-  // });
-
-  // socket.on("send_message", (data) => {
-  //   // take the data received and broadcasts to others
-  //   console.log("received send event", data);
-
-  //   socket.to(data.room).emit("receive_message", data);
-  // });
-
-  socket.on("send_message", (message, callback) => {
+  socket.on("send_message", (message) => {
     const user = getUser(socket.id);
+    console.log("user in send message", user);
     io.to(user.room).emit("message", { user: user, text: message });
+    console.log({ message });
 
     io.to(user.room).emit("roomData", {
       room: user.room,
       users: getUsersInRoom(user.room),
     });
-    callback();
+  });
+
+  socket.on("disconnect", () => {
+    const user = removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "admin",
+        text: `${user.name} had left`,
+      });
+    }
   });
 });
 
