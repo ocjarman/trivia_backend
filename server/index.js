@@ -2,11 +2,14 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const volleyball = require("volleyball");
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./User");
+// const { addUser, removeUser, getUser, getUsersInRoom } = require("./User");
+const RoomManager = require("./Data/RoomManager");
+const RoomClass = require("./Data/RoomClass");
 
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
+const roomManager = new RoomManager();
 
 // need cors to make connection with frontend
 app.use(cors());
@@ -37,54 +40,81 @@ io.on("connection", (socket) => {
   console.log(`Player is connected: ${socket.id}`);
 
   socket.on("join_room", ({ name, room }) => {
-    const { user } = addUser({ id: socket.id, name, room });
+    let roomInstance = roomManager.findRoom(room);
+    console.log("roomInstance", roomInstance);
+    let userJoiningRoom;
+
+    if (roomInstance) {
+      console.log("found existing room");
+      const { user } = roomInstance.addUser({ id: socket.id, name, room });
+      console.log({ user });
+      userJoiningRoom = user;
+    } else {
+      console.log("creating new room");
+      roomInstance = roomManager.createRoom(
+        { id: socket.id, name, room },
+        room
+      );
+      console.log(roomInstance);
+      userJoiningRoom = roomInstance.getUser(socket.id);
+      console.log({ userJoiningRoom });
+    }
 
     socket.emit("message", {
       user: "admin",
-      text: `${user.name}, welcome to room ${user.room}.`,
+      text: `${userJoiningRoom.name}, welcome to room ${userJoiningRoom.room}.`,
     });
 
-    socket.broadcast.to(user.room).emit("message", {
+    socket.broadcast.to(userJoiningRoom.room).emit("message", {
       user: "admin",
-      text: `${user.name}, has joined`,
+      text: `${userJoiningRoom.name}, has joined`,
     });
 
-    socket.join(user.room);
+    socket.join(userJoiningRoom.room);
 
     // not updating here but should update room data when someone leaves
-    io.to(user.room).emit("roomData", {
-      room: user.room,
-      users: getUsersInRoom(user.room),
+    io.to(roomInstance.room).emit("roomData", {
+      room: roomInstance.room,
+      users: roomInstance.getAllUsers(),
     });
   });
 
   socket.on("send_message", (message) => {
-    const user = getUser(socket.id);
-    io.to(user.room).emit("message", { user: user, text: message });
+    // search rooms
+    //room manager getBySocketId()
+
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    const foundUser = roomInstance.getUser(socket.id);
+
+    io.to(roomInstance.room).emit("message", {
+      user: foundUser,
+      text: message,
+    });
 
     // on every message sent, update room data. this includes when admin says someone has joined/left
 
-    io.to(user.room).emit("roomData", {
-      room: user.room,
-      users: getUsersInRoom(user.room),
+    io.to(roomInstance.room).emit("roomData", {
+      room: roomInstance.room,
+      users: roomInstance.getAllUsers(),
     });
   });
 
   socket.on("disconnect", () => {
     console.log("in disconnect");
-    let user = getUser(socket.id);
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    const foundUser = roomInstance.getUser(socket.id);
 
-    if (user) {
-      const usersRoom = user.room;
-      io.to(usersRoom).emit("message", {
+    if (foundUser) {
+      io.to(roomInstance.room).emit("message", {
         user: "admin",
-        text: `${user.name} has left`,
+        text: `${foundUser.name} has left`,
       });
-      removeUser(socket.id);
+      roomInstance.removeUser(socket.id);
+
       // must send rooom data after user is removed to update list on frontend
-      io.to(usersRoom).emit("roomData", {
-        room: usersRoom,
-        users: getUsersInRoom(usersRoom),
+      io.to(roomInstance.room).emit("roomData", {
+        room: roomInstance.room,
+        users: roomInstance.getAllUsers(),
       });
     } else {
       console.log("user of socket id does not exist", socket.id);
