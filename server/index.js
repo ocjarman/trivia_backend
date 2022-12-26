@@ -72,9 +72,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    console.log("in disconnect");
     let user = getUser(socket.id);
 
-    const usersRoom = user.room.slice();
+    const usersRoom = user.room;
+
+    console.log("user in disconnect ", user);
+    console.log("room in disconnect", usersRoom);
 
     if (user) {
       io.to(user.room).emit("message", {
@@ -83,8 +87,8 @@ io.on("connection", (socket) => {
       });
     }
 
-    user = removeUser(socket.id);
-
+    removeUser(socket.id);
+    console.log("removed the user");
     // must send rooom data after user is removed to update list on frontend
     io.to(usersRoom).emit("roomData", {
       room: usersRoom,
@@ -97,4 +101,4 @@ server.listen(4000, () => {
   console.log("server is running");
 });
 
-// module.exports = server;
+module.exports = server;
