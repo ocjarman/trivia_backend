@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect_user", () => {
+  socket.on("disconnect", () => {
     let user = getUser(socket.id);
 
     const usersRoom = user.room.slice();
