@@ -1,4 +1,4 @@
-const users = [];
+let users = [];
 
 const addUser = ({ id, name, room }) => {
   const existingUser = users.find((user) => {
@@ -15,13 +15,11 @@ const addUser = ({ id, name, room }) => {
 };
 
 const removeUser = (id) => {
-  const index = users.findIndex((user) => {
-    user.id === id;
+  const newUserArray = users.filter((user) => {
+    return user.id !== id;
   });
-
-  if (index !== -1) {
-    return users.splice(index, 1)[0];
-  }
+  // reset original users array to the new filtered array
+  users = newUserArray;
 };
 
 const getUser = (id) => users.find((user) => user.id === id);

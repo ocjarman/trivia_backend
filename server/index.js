@@ -38,7 +38,6 @@ io.on("connection", (socket) => {
 
   socket.on("join_room", ({ name, room }) => {
     const { user } = addUser({ id: socket.id, name, room });
-    console.log("line 40", user);
 
     socket.emit("message", {
       user: "admin",
@@ -52,6 +51,7 @@ io.on("connection", (socket) => {
 
     socket.join(user.room);
 
+    // not updating here but should update room data when someone leaves
     io.to(user.room).emit("roomData", {
       room: user.room,
       users: getUsersInRoom(user.room),
@@ -60,9 +60,10 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", (message) => {
     const user = getUser(socket.id);
-    console.log("user in send message", user);
     io.to(user.room).emit("message", { user: user, text: message });
-    console.log({ message });
+    console.log("getting users", getUsersInRoom(user.room));
+
+    // on every message sent, update room data. this includes when admin says someone has joined/left
 
     io.to(user.room).emit("roomData", {
       room: user.room,
@@ -70,14 +71,25 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
-    const user = removeUser(socket.id);
+  socket.on("disconnect_user", () => {
+    let user = getUser(socket.id);
+
+    const usersRoom = user.room.slice();
+
     if (user) {
       io.to(user.room).emit("message", {
         user: "admin",
-        text: `${user.name} had left`,
+        text: `${user.name} has left`,
       });
     }
+
+    user = removeUser(socket.id);
+
+    // must send rooom data after user is removed to update list on frontend
+    io.to(usersRoom).emit("roomData", {
+      room: usersRoom,
+      users: getUsersInRoom(usersRoom),
+    });
   });
 });
 
