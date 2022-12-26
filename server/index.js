@@ -61,7 +61,6 @@ io.on("connection", (socket) => {
   socket.on("send_message", (message) => {
     const user = getUser(socket.id);
     io.to(user.room).emit("message", { user: user, text: message });
-    console.log("getting users", getUsersInRoom(user.room));
 
     // on every message sent, update room data. this includes when admin says someone has joined/left
 
@@ -75,25 +74,21 @@ io.on("connection", (socket) => {
     console.log("in disconnect");
     let user = getUser(socket.id);
 
-    const usersRoom = user.room;
-
-    console.log("user in disconnect ", user);
-    console.log("room in disconnect", usersRoom);
-
     if (user) {
-      io.to(user.room).emit("message", {
+      const usersRoom = user.room;
+      io.to(usersRoom).emit("message", {
         user: "admin",
         text: `${user.name} has left`,
       });
+      removeUser(socket.id);
+      // must send rooom data after user is removed to update list on frontend
+      io.to(usersRoom).emit("roomData", {
+        room: usersRoom,
+        users: getUsersInRoom(usersRoom),
+      });
+    } else {
+      console.log("user of socket id does not exist", socket.id);
     }
-
-    removeUser(socket.id);
-    console.log("removed the user");
-    // must send rooom data after user is removed to update list on frontend
-    io.to(usersRoom).emit("roomData", {
-      room: usersRoom,
-      users: getUsersInRoom(usersRoom),
-    });
   });
 });
 
