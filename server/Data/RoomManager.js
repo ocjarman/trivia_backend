@@ -6,29 +6,29 @@ class RoomManager {
     this.rooms = [];
   }
 
-  createRoom(firstUser, id) {
+  createRoom(firstUser, roomId) {
     const existingRoom = this.rooms.find((room) => {
-      room.id === id;
+      room.roomId === roomId;
     });
     if (existingRoom) {
       return { error: "Room is taken" };
     } else {
-      const room = new RoomClass(firstUser, id);
+      const room = new RoomClass(firstUser, roomId);
       this.rooms.push(room);
       return room;
     }
   }
 
-  deleteRoom(id) {
+  deleteRoom(roomId) {
     const updatedRooms = this.rooms.filter((room) => {
-      return room.id !== id;
+      return room.roomId !== roomId;
     });
     // reset original users array to the new filtered array
     this.rooms = updatedRooms;
   }
 
   findRoom(roomId) {
-    return this.rooms.find((room) => room.room === roomId);
+    return this.rooms.find((room) => room.roomId === roomId);
   }
 
   getRoomBySocketId(socketId) {

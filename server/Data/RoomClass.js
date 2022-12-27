@@ -1,18 +1,18 @@
 class Room {
-  constructor(firstUser, room) {
+  constructor(firstUser, roomId) {
     this.users = [firstUser];
-    this.room = room;
+    this.roomId = roomId;
     this.status = null;
   }
 
-  addUser({ id, name, room }) {
+  addUser({ id, name, roomId }) {
     const existingUser = this.users.find((user) => {
       user.name === name;
     });
     if (existingUser) {
       return { error: "Username is taken" };
     }
-    const user = { id, name, room };
+    const user = { id, name, roomId };
     this.users.push(user);
     return { user };
   }

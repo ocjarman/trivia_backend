@@ -36,62 +36,63 @@ io.on("connection", (socket) => {
   // socket id is player id
   console.log(`Player is connected: ${socket.id}`);
 
-  socket.on("join_room", ({ name, room }) => {
-    let roomInstance = roomManager.findRoom(room);
+  socket.on("join_room", ({ name, roomId }) => {
+    console.log(roomId);
+    let roomInstance = roomManager.findRoom(roomId);
+    console.log(roomId);
+
     console.log("roomInstance", roomInstance);
     let userJoiningRoom;
 
     if (roomInstance) {
       console.log("found existing room");
-      const { user } = roomInstance.addUser({ id: socket.id, name, room });
+      const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
       console.log({ user });
       userJoiningRoom = user;
     } else {
       console.log("creating new room");
       roomInstance = roomManager.createRoom(
-        { id: socket.id, name, room },
-        room
+        { id: socket.id, name, roomId },
+        roomId
       );
-      console.log(roomInstance);
       userJoiningRoom = roomInstance.getUser(socket.id);
-      console.log({ userJoiningRoom });
     }
 
+    // message from server to client
     socket.emit("message", {
       user: "admin",
-      text: `${userJoiningRoom.name}, welcome to room ${userJoiningRoom.room}.`,
+      text: `${userJoiningRoom.name}, welcome to room ${userJoiningRoom.roomId}.`,
     });
 
-    socket.broadcast.to(userJoiningRoom.room).emit("message", {
+    // message from server to client
+    socket.broadcast.to(userJoiningRoom.roomId).emit("message", {
       user: "admin",
       text: `${userJoiningRoom.name}, has joined`,
     });
 
-    socket.join(userJoiningRoom.room);
+    socket.join(userJoiningRoom.roomId);
 
     // not updating here but should update room data when someone leaves
-    io.to(roomInstance.room).emit("roomData", {
-      room: roomInstance.room,
+    io.to(roomInstance.roomId).emit("roomData", {
+      roomId: roomInstance.roomId,
       users: roomInstance.getAllUsers(),
     });
   });
 
   socket.on("send_message", (message) => {
-    // search rooms
-    //room manager getBySocketId()
-
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     const foundUser = roomInstance.getUser(socket.id);
 
-    io.to(roomInstance.room).emit("message", {
+    // 'message' is to the client, 'send message' is to the server
+    io.to(roomInstance.roomId).emit("message", {
       user: foundUser,
       text: message,
     });
 
     // on every message sent, update room data. this includes when admin says someone has joined/left
 
-    io.to(roomInstance.room).emit("roomData", {
-      room: roomInstance.room,
+    io.to(roomInstance.roomId).emit("roomData", {
+      roomId: roomInstance.roomId,
       users: roomInstance.getAllUsers(),
     });
   });
@@ -102,15 +103,15 @@ io.on("connection", (socket) => {
     const foundUser = roomInstance.getUser(socket.id);
 
     if (foundUser) {
-      io.to(roomInstance.room).emit("message", {
+      io.to(roomInstance.roomId).emit("message", {
         user: "admin",
         text: `${foundUser.name} has left`,
       });
       roomInstance.removeUser(socket.id);
 
       // must send rooom data after user is removed to update list on frontend
-      io.to(roomInstance.room).emit("roomData", {
-        room: roomInstance.room,
+      io.to(roomInstance.roomId).emit("roomData", {
+        roomId: roomInstance.roomId,
         users: roomInstance.getAllUsers(),
       });
     } else {
