@@ -36,6 +36,22 @@ class Room {
   getUserCount() {
     return this.users.length;
   }
+
+  validateUsername(name) {
+    let validUsername;
+    let found = this.users.find((user) => {
+      user.name === name;
+    });
+    console.log({ found });
+    if (!found) {
+      validUsername = true;
+    }
+
+    if (found === undefined) {
+      validUsername = false;
+    }
+    return validUsername;
+  }
 }
 
 module.exports = Room;

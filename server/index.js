@@ -41,14 +41,16 @@ io.on("connection", (socket) => {
     let roomInstance = roomManager.findRoom(roomId);
     console.log(roomId);
 
-    console.log("roomInstance", roomInstance);
     let userJoiningRoom;
 
     if (roomInstance) {
-      console.log("found existing room");
+      // if (roomInstance.validateUsername(name) === true) {
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
       console.log({ user });
       userJoiningRoom = user;
+      // } else {
+      //   console.log("that username is taken");
+      // }
     } else {
       console.log("creating new room");
       roomInstance = roomManager.createRoom(
@@ -100,22 +102,27 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("in disconnect");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    const foundUser = roomInstance.getUser(socket.id);
 
-    if (foundUser) {
-      io.to(roomInstance.roomId).emit("message", {
-        user: "admin",
-        text: `${foundUser.name} has left`,
-      });
-      roomInstance.removeUser(socket.id);
+    // backend was breaking if refreshing on home page bc theres no room instance to get the user from
+    if (roomInstance !== undefined) {
+      const foundUser = roomInstance.getUser(socket.id);
+      if (foundUser) {
+        io.to(roomInstance.roomId).emit("message", {
+          user: "admin",
+          text: `${foundUser.name} has left`,
+        });
+        roomInstance.removeUser(socket.id);
 
-      // must send rooom data after user is removed to update list on frontend
-      io.to(roomInstance.roomId).emit("roomData", {
-        roomId: roomInstance.roomId,
-        users: roomInstance.getAllUsers(),
-      });
+        // must send rooom data after user is removed to update list on frontend
+        io.to(roomInstance.roomId).emit("roomData", {
+          roomId: roomInstance.roomId,
+          users: roomInstance.getAllUsers(),
+        });
+      } else {
+        console.log("user of socket id does not exist", socket.id);
+      }
     } else {
-      console.log("user of socket id does not exist", socket.id);
+      console.log("user is not in a room");
     }
   });
 });
