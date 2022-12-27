@@ -28,11 +28,8 @@ const io = new Server(server, {
 app.use(volleyball);
 app.use(express.json());
 
-//sets up body for us when making post requests or any req that needs a body
-// app.use(express.urlencoded({ extended: true }));
-
 // Set up routes
-app.use("/api", require("./api"));
+// app.use("/api", require("./api"));
 
 // when someone goes to connect to server thru client, this will start running
 io.on("connection", (socket) => {
