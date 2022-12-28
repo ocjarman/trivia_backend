@@ -5,7 +5,7 @@ const volleyball = require("volleyball");
 // const { addUser, removeUser, getUser, getUsersInRoom } = require("./User");
 const RoomManager = require("./Data/RoomManager");
 const RoomClass = require("./Data/RoomClass");
-
+const questions = require("../questions");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -37,10 +37,7 @@ io.on("connection", (socket) => {
   console.log(`Player is connected: ${socket.id}`);
 
   socket.on("join_room", ({ name, roomId }) => {
-    console.log(roomId);
     let roomInstance = roomManager.findRoom(roomId);
-    console.log(roomId);
-
     let userJoiningRoom;
 
     if (roomInstance) {
@@ -97,6 +94,19 @@ io.on("connection", (socket) => {
       roomId: roomInstance.roomId,
       users: roomInstance.getAllUsers(),
     });
+  });
+
+  socket.on("startGame", () => {
+    console.log("starting game");
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    let usersInRoom = roomInstance.getAllUsers();
+    if (usersInRoom.length > 1) {
+      //emit to all that the game is going to begin in 1 minute, set timer
+      socket.broadcast.to(roomInstance.roomId).emit("otherPlayerStartedGame");
+      io.to(roomInstance.roomId).emit("gameStarted", {
+        questions,
+      });
+    }
   });
 
   socket.on("disconnect", () => {
