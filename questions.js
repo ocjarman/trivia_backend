@@ -1,5 +1,6 @@
 const questions = [
   {
+    id: 1,
     category: "Science & Nature",
     type: "multiple",
     difficulty: "hard",
@@ -12,6 +13,7 @@ const questions = [
     ],
   },
   {
+    id: 2,
     category: "Science & Nature",
     type: "multiple",
     difficulty: "easy",
@@ -24,20 +26,21 @@ const questions = [
     ],
   },
   {
+    id: 3,
     category: "Entertainment: Video Games",
     type: "multiple",
     difficulty: "medium",
-    question:
-      "What name does the little headcrab in &quot;Half Life 2&quot; have?",
+    question: "What name does the little headcrab in Half Life 2 have?",
     correct_answer: "Lamarr",
     incorrect_answers: ["Jumperr", "Drett", "Jerry"],
   },
   {
+    id: 4,
     category: "Entertainment: Video Games",
     type: "multiple",
     difficulty: "hard",
     question:
-      "Which game in the &quot;Monster Hunter&quot; series introduced the &quot;Insect Glaive&quot; weapon?",
+      "Which game in the Monster Hunter series introduced the Insect Glaive weapon?",
     correct_answer: "Monster Hunter 4",
     incorrect_answers: [
       "Monster Hunter Freedom",
@@ -46,6 +49,7 @@ const questions = [
     ],
   },
   {
+    id: 5,
     category: "Geography",
     type: "multiple",
     difficulty: "hard",
@@ -54,32 +58,36 @@ const questions = [
     incorrect_answers: ["Isthmus of Suez", "Urals", "Australasia"],
   },
   {
+    id: 6,
     category: "Politics",
     type: "multiple",
     difficulty: "medium",
-    question: "Which of these is NOT one of Donald Trump&#039;s children?",
+    question: "Which of these is NOT one of Donald Trump's children?",
     correct_answer: "Julius",
     incorrect_answers: ["Donald Jr.", "Ivanka", "Eric"],
   },
   {
+    id: 7,
     category: "Science: Computers",
     type: "multiple",
     difficulty: "hard",
     question:
-      "Released in 2001, the first edition of Apple&#039;s Mac OS X operating system (version 10.0) was given what animal code name?",
+      "Released in 2001, the first edition of Apples Mac OS X operating system (version 10.0) was given what animal code name?",
     correct_answer: "Cheetah",
     incorrect_answers: ["Puma", "Tiger", "Leopard"],
   },
   {
+    id: 8,
     category: "Entertainment: Video Games",
     type: "boolean",
     difficulty: "easy",
     question:
-      "Several characters in &quot;Super Mario 64&quot; blink their eyes, including Mario himself.",
+      "Several characters in Super Mario 64 blink their eyes, including Mario himself.",
     correct_answer: "True",
     incorrect_answers: ["False"],
   },
   {
+    id: 9,
     category: "Celebrities",
     type: "multiple",
     difficulty: "hard",
@@ -88,6 +96,7 @@ const questions = [
     incorrect_answers: ["1970", "1960", "1972"],
   },
   {
+    id: 10,
     category: "History",
     type: "multiple",
     difficulty: "hard",
