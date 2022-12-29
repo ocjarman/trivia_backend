@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
     // message from server to client
     socket.broadcast.to(userJoiningRoom.roomId).emit("message", {
       user: "admin",
-      text: `${userJoiningRoom.name}, has joined`,
+      text: `${userJoiningRoom.name} has joined`,
     });
 
     socket.join(userJoiningRoom.roomId);
@@ -96,13 +96,17 @@ io.on("connection", (socket) => {
     });
   });
 
+  // ---once game has started, hit this listener and begin comm---
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     let usersInRoom = roomInstance.getAllUsers();
     if (usersInRoom.length > 1) {
       //emit to all that the game is going to begin in 1 minute, set timer
-      socket.broadcast.to(roomInstance.roomId).emit("otherPlayerStartedGame");
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("otherPlayerStartedGame", { questions });
+
       io.to(roomInstance.roomId).emit("gameStarted", {
         questions,
       });
