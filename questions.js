@@ -1,6 +1,6 @@
 const questions = [
   {
-    id: 1,
+    id: 0,
     category: "Science & Nature",
     type: "multiple",
     difficulty: "hard",
@@ -13,7 +13,7 @@ const questions = [
     ],
   },
   {
-    id: 2,
+    id: 1,
     category: "Science & Nature",
     type: "multiple",
     difficulty: "easy",
@@ -26,7 +26,7 @@ const questions = [
     ],
   },
   {
-    id: 3,
+    id: 2,
     category: "Entertainment: Video Games",
     type: "multiple",
     difficulty: "medium",
@@ -35,7 +35,7 @@ const questions = [
     incorrect_answers: ["Jumperr", "Drett", "Jerry"],
   },
   {
-    id: 4,
+    id: 3,
     category: "Entertainment: Video Games",
     type: "multiple",
     difficulty: "hard",
@@ -49,7 +49,7 @@ const questions = [
     ],
   },
   {
-    id: 5,
+    id: 4,
     category: "Geography",
     type: "multiple",
     difficulty: "hard",
@@ -58,7 +58,7 @@ const questions = [
     incorrect_answers: ["Isthmus of Suez", "Urals", "Australasia"],
   },
   {
-    id: 6,
+    id: 5,
     category: "Politics",
     type: "multiple",
     difficulty: "medium",
@@ -67,7 +67,7 @@ const questions = [
     incorrect_answers: ["Donald Jr.", "Ivanka", "Eric"],
   },
   {
-    id: 7,
+    id: 6,
     category: "Science: Computers",
     type: "multiple",
     difficulty: "hard",
@@ -77,7 +77,7 @@ const questions = [
     incorrect_answers: ["Puma", "Tiger", "Leopard"],
   },
   {
-    id: 8,
+    id: 7,
     category: "Entertainment: Video Games",
     type: "boolean",
     difficulty: "easy",
@@ -87,7 +87,7 @@ const questions = [
     incorrect_answers: ["False"],
   },
   {
-    id: 9,
+    id: 8,
     category: "Celebrities",
     type: "multiple",
     difficulty: "hard",
@@ -96,7 +96,7 @@ const questions = [
     incorrect_answers: ["1970", "1960", "1972"],
   },
   {
-    id: 10,
+    id: 9,
     category: "History",
     type: "multiple",
     difficulty: "hard",

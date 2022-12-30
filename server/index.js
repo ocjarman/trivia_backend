@@ -125,7 +125,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  // socket.on("gameResults", { name, roomId, score });
+  socket.on("gameResultsSent", (data) => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.setGameScore(data);
+    const allScores = roomInstance.getAllScores();
+    socket.emit("allScores", { allScores });
+  });
+
   socket.on("restartGame", () => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameStatus("ready");

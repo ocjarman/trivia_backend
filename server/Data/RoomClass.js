@@ -3,6 +3,7 @@ class Room {
     this.users = [firstUser];
     this.roomId = roomId;
     this.gameStatus = gameStatus;
+    this.gameScores = [];
   }
 
   addUser({ id, name, roomId }) {
@@ -46,6 +47,15 @@ class Room {
   }
   setGameStatus(status) {
     this.gameStatus = status;
+  }
+  setGameScore(gameData) {
+    this.gameScores.push(gameData);
+    this.gameScores = this.gameScores.sort(
+      (a, b) => parseFloat(b.score) - parseFloat(a.score)
+    );
+  }
+  getAllScores() {
+    return this.gameScores;
   }
 }
 
