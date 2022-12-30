@@ -41,13 +41,13 @@ io.on("connection", (socket) => {
     let userJoiningRoom;
 
     if (roomInstance) {
-      // if (roomInstance.validateUsername(name) === true) {
+      const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      console.log({ user });
+      if (gameStatus === "in progress") {
+        socket.emit("pleaseWait");
+      }
+      // socket.emit("gameStatus", { gameStatus });
       userJoiningRoom = user;
-      // } else {
-      //   console.log("that username is taken");
-      // }
     } else {
       console.log("creating new room");
       roomInstance = roomManager.createRoom(
@@ -110,7 +110,25 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStarted", {
         questions,
       });
+
+      // setting game status as 'in progress' so that when new user joins, they wait
+      roomInstance.setGameStatus("in progress");
+
+      // setinterval 60 seconds, and then set game to 'not in progress' again
+      const gameOver = () => {
+        roomInstance.setGameStatus("game results");
+        const gameStatus = roomInstance.getGameStatus();
+        socket.emit("gameStatus", { gameStatus });
+      };
+
+      setTimeout(gameOver, 60000);
     }
+  });
+
+  // socket.on("gameResults", { name, roomId, score });
+  socket.on("restartGame", () => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.setGameStatus("ready");
   });
 
   socket.on("disconnect", () => {

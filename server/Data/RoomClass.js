@@ -1,8 +1,8 @@
 class Room {
-  constructor(firstUser, roomId) {
+  constructor(firstUser, roomId, gameStatus = "ready") {
     this.users = [firstUser];
     this.roomId = roomId;
-    this.status = null;
+    this.gameStatus = gameStatus;
   }
 
   addUser({ id, name, roomId }) {
@@ -37,20 +37,15 @@ class Room {
     return this.users.length;
   }
 
-  validateUsername(name) {
-    let validUsername;
-    let found = this.users.find((user) => {
-      user.name === name;
-    });
-    console.log({ found });
-    if (!found) {
-      validUsername = true;
+  getGameStatus() {
+    if (this.gameStatus) {
+      return this.gameStatus;
+    } else {
+      return "no game being played";
     }
-
-    if (found === undefined) {
-      validUsername = false;
-    }
-    return validUsername;
+  }
+  setGameStatus(status) {
+    this.gameStatus = status;
   }
 }
 
