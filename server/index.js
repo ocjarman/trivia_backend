@@ -116,9 +116,16 @@ io.on("connection", (socket) => {
 
       // setinterval 60 seconds, and then set game to 'not in progress' again
       const gameOver = () => {
-        roomInstance.setGameStatus("game results");
+        // roomInstance.setGameStatus("ready");
         const gameStatus = roomInstance.getGameStatus();
-        socket.emit("gameStatus", { gameStatus });
+        socket.broadcast
+          .to(roomInstance.roomId)
+          .emit("gameStatus", { gameStatus });
+
+        io.to(roomInstance.roomId).emit("gameStatus", {
+          gameStatus,
+        });
+        console.log("times up");
       };
 
       setTimeout(gameOver, 60000);
@@ -129,7 +136,13 @@ io.on("connection", (socket) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameScore(data);
     const allScores = roomInstance.getAllScores();
-    socket.emit("allScores", { allScores });
+    const users = roomInstance.getAllUsers();
+    if (users.length === allScores.length) {
+      socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
+      io.to(roomInstance.roomId).emit("allScores", {
+        allScores,
+      });
+    }
   });
 
   socket.on("restartGame", () => {
