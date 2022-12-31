@@ -135,6 +135,7 @@ io.on("connection", (socket) => {
   socket.on("restartGame", () => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameStatus("ready");
+    roomInstance.clearScores();
   });
 
   socket.on("disconnect", () => {

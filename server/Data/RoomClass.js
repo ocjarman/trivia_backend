@@ -57,6 +57,9 @@ class Room {
   getAllScores() {
     return this.gameScores;
   }
+  clearScores() {
+    this.gameScores = [];
+  }
 }
 
 module.exports = Room;
