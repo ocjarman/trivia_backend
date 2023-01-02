@@ -41,13 +41,13 @@ io.on("connection", (socket) => {
     let userJoiningRoom;
 
     if (roomInstance) {
-      // if (roomInstance.validateUsername(name) === true) {
+      const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      console.log({ user });
+      if (gameStatus === "in progress") {
+        socket.emit("pleaseWait");
+      }
+      // socket.emit("gameStatus", { gameStatus });
       userJoiningRoom = user;
-      // } else {
-      //   console.log("that username is taken");
-      // }
     } else {
       console.log("creating new room");
       roomInstance = roomManager.createRoom(
@@ -110,7 +110,45 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStarted", {
         questions,
       });
+
+      // setting game status as 'in progress' so that when new user joins, they wait
+      roomInstance.setGameStatus("in progress");
+
+      // setinterval 60 seconds, and then set game to 'not in progress' again
+      const gameOver = () => {
+        // roomInstance.setGameStatus("ready");
+        const gameStatus = roomInstance.getGameStatus();
+        socket.broadcast
+          .to(roomInstance.roomId)
+          .emit("gameStatus", { gameStatus });
+
+        io.to(roomInstance.roomId).emit("gameStatus", {
+          gameStatus,
+        });
+        console.log("times up");
+      };
+
+      setTimeout(gameOver, 60000);
     }
+  });
+
+  socket.on("gameResultsSent", (data) => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.setGameScore(data);
+    const allScores = roomInstance.getAllScores();
+    const users = roomInstance.getAllUsers();
+    if (users.length === allScores.length) {
+      socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
+      io.to(roomInstance.roomId).emit("allScores", {
+        allScores,
+      });
+    }
+  });
+
+  socket.on("restartGame", () => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.setGameStatus("ready");
+    roomInstance.clearScores();
   });
 
   socket.on("disconnect", () => {
