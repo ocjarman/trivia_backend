@@ -31,6 +31,23 @@ app.use(express.json());
 // Set up routes
 // app.use("/api", require("./api"));
 
+const generateNewQuestions = (arrayOfQuestions) => {
+  let randomizedQuestions = [];
+  let q1 = Math.floor(Math.random() * arrayOfQuestions.length);
+  let q2 = Math.floor(Math.random() * arrayOfQuestions.length);
+  let q3 = Math.floor(Math.random() * arrayOfQuestions.length);
+  let q4 = Math.floor(Math.random() * arrayOfQuestions.length);
+  let q5 = Math.floor(Math.random() * arrayOfQuestions.length);
+  randomizedQuestions.push(
+    arrayOfQuestions[q1],
+    arrayOfQuestions[q2],
+    arrayOfQuestions[q3],
+    arrayOfQuestions[q4],
+    arrayOfQuestions[q5]
+  );
+  return randomizedQuestions;
+};
+
 // when someone goes to connect to server thru client, this will start running
 io.on("connection", (socket) => {
   // socket id is player id
@@ -102,13 +119,15 @@ io.on("connection", (socket) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     let usersInRoom = roomInstance.getAllUsers();
     if (usersInRoom.length > 1) {
+      let randomizedQuestions = generateNewQuestions(questions);
+
       //emit to all that the game is going to begin in 1 minute, set timer
       socket.broadcast
         .to(roomInstance.roomId)
-        .emit("otherPlayerStartedGame", { questions });
+        .emit("otherPlayerStartedGame", { randomizedQuestions });
 
       io.to(roomInstance.roomId).emit("gameStarted", {
-        questions,
+        randomizedQuestions,
       });
 
       // setting game status as 'in progress' so that when new user joins, they wait
