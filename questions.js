@@ -6,10 +6,11 @@ const questions = [
     difficulty: "hard",
     question: "Which of these chemical compounds is NOT found in gastric acid?",
     correct_answer: "Sulfuric acid",
-    incorrect_answers: [
+    answerChoices: [
       "Hydrochloric acid",
       "Potassium chloride",
       "Sodium chloride",
+      "Sulfuric acid",
     ],
   },
   {
@@ -19,8 +20,9 @@ const questions = [
     difficulty: "easy",
     question: "The asteroid belt is located between which two planets?",
     correct_answer: "Mars and Jupiter",
-    incorrect_answers: [
+    answerChoices: [
       "Jupiter and Saturn",
+      "Mars and Jupiter",
       "Mercury and Venus",
       "Earth and Mars",
     ],
@@ -32,7 +34,7 @@ const questions = [
     difficulty: "medium",
     question: "What name does the little headcrab in Half Life 2 have?",
     correct_answer: "Lamarr",
-    incorrect_answers: ["Jumperr", "Drett", "Jerry"],
+    answerChoices: ["Jumperr", "Drett", "Lamarr", "Jerry"],
   },
   {
     id: 3,
@@ -42,10 +44,11 @@ const questions = [
     question:
       "Which game in the Monster Hunter series introduced the Insect Glaive weapon?",
     correct_answer: "Monster Hunter 4",
-    incorrect_answers: [
+    answerChoices: [
       "Monster Hunter Freedom",
       "Monster Hunter Stories",
       "Monster Hunter 2",
+      "Monster Hunter 4",
     ],
   },
   {
@@ -55,7 +58,12 @@ const questions = [
     difficulty: "hard",
     question: "What is the land connecting North America and South America?",
     correct_answer: "Isthmus of Panama",
-    incorrect_answers: ["Isthmus of Suez", "Urals", "Australasia"],
+    answerChoices: [
+      "Isthmus of Suez",
+      "Urals",
+      "Isthmus of Panama",
+      "Australasia",
+    ],
   },
   {
     id: 5,
@@ -64,7 +72,7 @@ const questions = [
     difficulty: "medium",
     question: "Which of these is NOT one of Donald Trump's children?",
     correct_answer: "Julius",
-    incorrect_answers: ["Donald Jr.", "Ivanka", "Eric"],
+    answerChoices: ["Donald Jr.", "Julius", "Ivanka", "Eric"],
   },
   {
     id: 6,
@@ -74,7 +82,7 @@ const questions = [
     question:
       "Released in 2001, the first edition of Apples Mac OS X operating system (version 10.0) was given what animal code name?",
     correct_answer: "Cheetah",
-    incorrect_answers: ["Puma", "Tiger", "Leopard"],
+    answerChoices: ["Cheetah", "Puma", "Tiger", "Leopard"],
   },
   {
     id: 7,
@@ -84,7 +92,7 @@ const questions = [
     question:
       "Several characters in Super Mario 64 blink their eyes, including Mario himself.",
     correct_answer: "True",
-    incorrect_answers: ["False"],
+    answerChoices: ["True", "False"],
   },
   {
     id: 8,
@@ -93,7 +101,7 @@ const questions = [
     difficulty: "hard",
     question: "Gabe Newell was born in which year?",
     correct_answer: "1962 ",
-    incorrect_answers: ["1970", "1960", "1972"],
+    answerChoices: ["1970", "1962", "1960", "1972"],
   },
   {
     id: 9,
@@ -103,9 +111,10 @@ const questions = [
     question:
       "The Bohemian Revolt (1618-1620) started after Protestants in Prague did what to their Catholic Lords Regents?",
     correct_answer: "Threw them out of a window",
-    incorrect_answers: [
+    answerChoices: [
       "Insulted their mothers",
       "Locked them in stockades",
+      "Threw them out of a window",
       "Hung them.",
     ],
   },
@@ -117,7 +126,7 @@ const questions = [
     question:
       "In what year did Neil Armstrong and Buzz Aldrin land on the moon?",
     correct_answer: "1969",
-    incorrect_answers: ["1965", "1966", "1973"],
+    answerChoices: ["1965", "1966", "1973", "1969"],
   },
   {
     id: 11,
@@ -126,7 +135,12 @@ const questions = [
     difficulty: "medium",
     question: "In Clash Royale what is Arena 4 called?",
     correct_answer: "P.E.K.K.A's Playhouse",
-    incorrect_answers: ["Barbarian Bowl", "Spell Valley", "Royal Arena"],
+    answerChoices: [
+      "P.E.K.K.A's Playhouse",
+      "Barbarian Bowl",
+      "Spell Valley",
+      "Royal Arena",
+    ],
   },
   {
     id: 12,
@@ -135,7 +149,7 @@ const questions = [
     difficulty: "medium",
     question: "Which of these artists do NOT originate from France?",
     correct_answer: "The Chemical Brothers",
-    incorrect_answers: ["Air", "Justice", "Daft Punk"],
+    answerChoices: ["Air", "The Chemical Brothers", "Justice", "Daft Punk"],
   },
   {
     id: 13,
@@ -145,7 +159,7 @@ const questions = [
     question:
       "Pokemon Go is a location-based augmented reality game developed and published by which company?",
     correct_answer: "Niantic",
-    incorrect_answers: ["Rovio", "Zynga", "Supercell"],
+    answerChoices: ["Rovio", "Zynga", "Supercell", "Niantic"],
   },
   {
     id: 14,
@@ -155,9 +169,10 @@ const questions = [
     question:
       "Which movie sequel had improved box office results compared to its original film?",
     correct_answer: "Toy Story 2",
-    incorrect_answers: [
+    answerChoices: [
       "Sin City: A Dame to Kill For",
       "Speed 2: Cruise Control",
+      "Toy Story 2",
       "Son of the Mask",
     ],
   },
@@ -168,7 +183,7 @@ const questions = [
     difficulty: "easy",
     question: "Ottawa is the capital of Canada.",
     correct_answer: "True",
-    incorrect_answers: ["False"],
+    answerChoices: ["True", "False"],
   },
   {
     id: 16,
@@ -177,7 +192,7 @@ const questions = [
     difficulty: "medium",
     question: "By how many minutes are you late to work in Half-Life?",
     correct_answer: "30",
-    incorrect_answers: ["5", "60", "15"],
+    answerChoices: ["5", "60", "15", "30"],
   },
   {
     id: 17,
@@ -186,7 +201,7 @@ const questions = [
     difficulty: "hard",
     question: "Which one of these chassis codes are used by BMW 3-series?",
     correct_answer: "E46",
-    incorrect_answers: ["E39", "E85", "F10"],
+    answerChoices: ["E39", "E46", "E85", "F10"],
   },
   {
     id: 18,
@@ -195,8 +210,9 @@ const questions = [
     difficulty: "easy",
     question: "Who is depicted on the US hundred dollar bill?",
     correct_answer: "Benjamin Franklin",
-    incorrect_answers: [
+    answerChoices: [
       "George Washington",
+      "Benjamin Franklin",
       "Abraham Lincoln",
       "Thomas Jefferson",
     ],
@@ -209,7 +225,7 @@ const questions = [
     question:
       "What does the yellow diamond on the NFPA 704 fire diamond represent?",
     correct_answer: "Reactivity",
-    incorrect_answers: ["Health", "Flammability", "Radioactivity"],
+    answerChoices: ["Health", "Reactivity", "Flammability", "Radioactivity"],
   },
   {
     id: 20,
@@ -219,7 +235,8 @@ const questions = [
     question:
       "Final Fantasy VI was originally released outside Japan under what name?",
     correct_answer: "Final Fantasy III",
-    incorrect_answers: [
+    answerChoices: [
+      "Final Fantasy III",
       "Final Fantasy VI",
       "Final Fantasy V",
       "Final Fantasy II",
@@ -233,9 +250,10 @@ const questions = [
     question:
       "What is the name of the peninsula containing Spain and Portugal?",
     correct_answer: "Iberian Peninsula",
-    incorrect_answers: [
+    answerChoices: [
       "European Peninsula",
       "Peloponnesian Peninsula",
+      "Iberian Peninsula",
       "Scandinavian Peninsula",
     ],
   },
@@ -246,7 +264,7 @@ const questions = [
     difficulty: "medium",
     question: "How fast is USB 3.1 Gen 2 theoretically?",
     correct_answer: "10 Gb/s",
-    incorrect_answers: ["5 Gb/s", "8 Gb/s", "1 Gb/s"],
+    answerChoices: ["10 Gb/s", "5 Gb/s", "8 Gb/s", "1 Gb/s"],
   },
   {
     id: 23,
@@ -255,8 +273,9 @@ const questions = [
     difficulty: "hard",
     question: "In TF2 Lore, what are the names of the Heavy's younger sisters?",
     correct_answer: "Yana and Bronislava",
-    incorrect_answers: [
+    answerChoices: [
       "Gaba and Anna",
+      "Yana and Bronislava",
       "Yanna and Gaba",
       "Anna and Bronislava",
     ],
@@ -268,7 +287,12 @@ const questions = [
     difficulty: "medium",
     question: "Lift Your Spirit is an album by which artist?",
     correct_answer: "Aloe Blacc",
-    incorrect_answers: ["Lena Meyer-Landrut", "Stevie Wonder", "Taylor Swift"],
+    answerChoices: [
+      "Aloe Blacc",
+      "Lena Meyer-Landrut",
+      "Stevie Wonder",
+      "Taylor Swift",
+    ],
   },
   {
     id: 25,
@@ -277,7 +301,7 @@ const questions = [
     difficulty: "medium",
     question: "What is the capital of Seychelles?",
     correct_answer: "Victoria",
-    incorrect_answers: ["Luanda", "N'Djamena", "Tripoli"],
+    answerChoices: ["Luanda", "N'Djamena", "Tripoli", "Victoria"],
   },
   {
     id: 26,
@@ -287,7 +311,12 @@ const questions = [
     question:
       "Which person from JoJo's Bizarre Adventure does NOT house a reference to a band, artist, or song earlier than 1980?",
     correct_answer: "Giorno Giovanna",
-    incorrect_answers: ["Josuke Higashikata", "Jolyne Cujoh", "Johnny Joestar"],
+    answerChoices: [
+      "Giorno Giovanna",
+      "Josuke Higashikata",
+      "Jolyne Cujoh",
+      "Johnny Joestar",
+    ],
   },
   {
     id: 27,
@@ -297,7 +326,12 @@ const questions = [
     question:
       "What kind of train was Stepney, a train on the Bluebell Railway notable for his appearance in The Railway Series?",
     correct_answer: "LB & SCR A1X",
-    incorrect_answers: ["LB & SCR E2", "LB & SCR J1", "LB & SCR D1"],
+    answerChoices: [
+      "LB & SCR E2",
+      "LB & SCR J1",
+      "LB & SCR A1X",
+      "LB & SCR D1",
+    ],
   },
   {
     id: 28,
@@ -306,7 +340,7 @@ const questions = [
     difficulty: "medium",
     question: "What was the main currency in Club Penguin?",
     correct_answer: "Coins",
-    incorrect_answers: ["Stamps", "Tickets", "Gems"],
+    answerChoices: ["Stamps", "Tickets", "Gems", "Coins"],
   },
   {
     id: 29,
@@ -315,7 +349,8 @@ const questions = [
     difficulty: "medium",
     question: "What is real haggis made of?",
     correct_answer: "Sheep's Heart, Liver and Lungs",
-    incorrect_answers: [
+    answerChoices: [
+      "Sheep's Heart, Liver and Lungs",
       "Sheep's Heart, Kidneys and Lungs",
       "Sheep's Liver, Kidneys and Eyes",
       "Whole Sheep",
@@ -329,7 +364,7 @@ const questions = [
     question:
       "Several characters in Super Mario 64 blink their eyes, including Mario himself.",
     correct_answer: "True",
-    incorrect_answers: ["False"],
+    answerChoices: ["True", "False"],
   },
   {
     id: 31,
@@ -338,9 +373,10 @@ const questions = [
     difficulty: "easy",
     question: "What is Tasmania?",
     correct_answer: "An Australian State",
-    incorrect_answers: [
+    answerChoices: [
       "A flavor of Ben and Jerry's ice-cream",
       "A Psychological Disorder",
+      "An Australian State",
       "The Name of a Warner Brothers Cartoon Character",
     ],
   },
@@ -351,7 +387,12 @@ const questions = [
     difficulty: "hard",
     question: "Who was Donald Trump's first wife?",
     correct_answer: "Ivana Zelnickova",
-    incorrect_answers: ["Melania Knauss", "Marla Maples", "Nancy Davis"],
+    answerChoices: [
+      "Ivana Zelnickova",
+      "Melania Knauss",
+      "Marla Maples",
+      "Nancy Davis",
+    ],
   },
   {
     id: 33,
@@ -360,7 +401,7 @@ const questions = [
     difficulty: "medium",
     question: "The Korean War ended in 1953 without any ceasefire.",
     correct_answer: "False",
-    incorrect_answers: ["True"],
+    answerChoices: ["True", "False"],
   },
   {
     id: 34,
@@ -370,7 +411,7 @@ const questions = [
     question:
       "What is the name of the adventurer you meet at the mines in Stardew Valley?",
     correct_answer: "Marlon",
-    incorrect_answers: ["Marnie", "Morris", "Marvin"],
+    answerChoices: ["Marnie", "Morris", "Marlon", "Marvin"],
   },
   {
     id: 35,
@@ -379,10 +420,11 @@ const questions = [
     difficulty: "easy",
     question: "Which two teams played in Super Bowl XLII?",
     correct_answer: "The New York Giants  &  The New England Patriots",
-    incorrect_answers: [
+    answerChoices: [
       "The Green Bay Packers  &  The Pittsburgh Steelers",
       "The Philadelphia Eagles  &  The New England Patriots",
       "The Seattle Seahawks  &  The Denver Broncos",
+      "The New York Giants  &  The New England Patriots",
     ],
   },
   {
@@ -393,7 +435,7 @@ const questions = [
     question:
       "In the 2000 video game Crimson Skies, what was the name of the protagonists' zeppelin?",
     correct_answer: "Pandora",
-    incorrect_answers: ["Helios", "Icarus", "Orion"],
+    answerChoices: ["Helios", "Icarus", "Orion", "Pandora"],
   },
   {
     id: 37,
@@ -403,9 +445,10 @@ const questions = [
     question:
       "In Divinity: Original Sin II, what is the name of the skeletal origin character?",
     correct_answer: "Fane",
-    incorrect_answers: [
+    answerChoices: [
       "Lohse",
       "The Red Prince",
+      "Fane",
       "There are no skeletal origin characters",
     ],
   },
@@ -416,7 +459,12 @@ const questions = [
     difficulty: "hard",
     question: "In the Nintendo Game Splatoon 2, what is Marina's screen name?",
     correct_answer: "DJ_Hyperfresh",
-    incorrect_answers: ["MC.princess", "Kidnotsquid123", "I0ffTh3H00k"],
+    answerChoices: [
+      "MC.princess",
+      "DJ_Hyperfresh",
+      "Kidnotsquid123",
+      "I0ffTh3H00k",
+    ],
   },
   {
     id: 39,
@@ -426,7 +474,7 @@ const questions = [
     question:
       "In Resident Evil, only Chris has access to the grenade launcher.",
     correct_answer: "False",
-    incorrect_answers: ["True"],
+    answerChoices: ["True", "False"],
   },
 ];
 
