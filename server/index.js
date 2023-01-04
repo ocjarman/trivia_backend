@@ -56,14 +56,11 @@ io.on("connection", (socket) => {
   socket.on("join_room", ({ name, roomId }) => {
     let roomInstance = roomManager.findRoom(roomId);
     let userJoiningRoom;
-
+    console.log("join room");
+    console.log(socket.id);
     if (roomInstance) {
-      const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      if (gameStatus === "in progress") {
-        socket.emit("pleaseWait");
-      }
-      // socket.emit("gameStatus", { gameStatus });
+
       userJoiningRoom = user;
     } else {
       console.log("creating new room");
