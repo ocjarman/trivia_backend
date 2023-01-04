@@ -1,6 +1,6 @@
-// const express = require("express");
-// const router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-// router.use("/questions", require("./questionsRouter"));
+router.use("/health", require("./healthRouter.js"));
 
-// module.exports = router;
+module.exports = router;

@@ -29,7 +29,7 @@ app.use(volleyball);
 app.use(express.json());
 
 // Set up routes
-// app.use("/api", require("./api"));
+app.use("/api", require("./api"));
 
 const generateNewQuestions = (arrayOfQuestions) => {
   let randomizedQuestions = [];
