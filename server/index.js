@@ -142,7 +142,7 @@ io.on("connection", (socket) => {
 
       // setinterval 60 seconds, and then set game to 'not in progress' again
       const gameOver = () => {
-        roomInstance.setGameStatus("ready");
+        // roomInstance.setGameStatus("ready");
         const gameStatus = roomInstance.getGameStatus();
         console.log("top of game over", gameStatus);
         socket.broadcast
