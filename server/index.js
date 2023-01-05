@@ -29,7 +29,7 @@ app.use(volleyball);
 app.use(express.json());
 
 // Set up routes
-// app.use("/api", require("./api"));
+app.use("/api", require("./api"));
 
 const generateNewQuestions = (arrayOfQuestions) => {
   let randomizedQuestions = [];
@@ -60,10 +60,8 @@ io.on("connection", (socket) => {
     if (roomInstance) {
       const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      if (gameStatus === "in progress") {
-        socket.emit("pleaseWait");
-      }
-      // socket.emit("gameStatus", { gameStatus });
+      // will need this for implementing user waiting room while other players finish game
+      socket.emit("gameStatus", { gameStatus });
       userJoiningRoom = user;
     } else {
       console.log("creating new room");
@@ -71,6 +69,7 @@ io.on("connection", (socket) => {
         { id: socket.id, name, roomId },
         roomId
       );
+      roomInstance.setGameStatus("ready");
       userJoiningRoom = roomInstance.getUser(socket.id);
     }
 
@@ -117,6 +116,8 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.clearScores();
+
     let usersInRoom = roomInstance.getAllUsers();
     if (usersInRoom.length > 1) {
       let randomizedQuestions = generateNewQuestions(questions);
@@ -130,24 +131,14 @@ io.on("connection", (socket) => {
         randomizedQuestions,
       });
 
-      // setting game status as 'in progress' so that when new user joins, they wait
-      roomInstance.setGameStatus("in progress");
+      let gameStatus = roomInstance.setGameStatus("in progress");
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus });
 
-      // setinterval 60 seconds, and then set game to 'not in progress' again
-      const gameOver = () => {
-        // roomInstance.setGameStatus("ready");
-        const gameStatus = roomInstance.getGameStatus();
-        socket.broadcast
-          .to(roomInstance.roomId)
-          .emit("gameStatus", { gameStatus });
-
-        io.to(roomInstance.roomId).emit("gameStatus", {
-          gameStatus,
-        });
-        console.log("times up");
-      };
-
-      setTimeout(gameOver, 60000);
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
+      });
     }
   });
 
@@ -156,19 +147,41 @@ io.on("connection", (socket) => {
     roomInstance.setGameScore(data);
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
+
     if (users.length === allScores.length) {
       socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
-      io.to(roomInstance.roomId).emit("allScores", {
-        allScores,
+      io.to(roomInstance.roomId).emit("allScores", allScores);
+      console.log("receiving game scores", allScores);
+
+      roomInstance.setGameStatus("ready");
+      const gameStatus = roomInstance.getGameStatus();
+      console.log("top of game over", gameStatus);
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus });
+
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
       });
     }
   });
 
-  socket.on("restartGame", () => {
-    let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    roomInstance.setGameStatus("ready");
-    roomInstance.clearScores();
-  });
+  // socket.on("restartGame", (data) => {
+  //   try {
+  //     let roomInstance = roomManager.findRoom(data.roomId);
+  //     roomInstance.setGameStatus("ready");
+  //     const gameStatus = roomInstance.getGameStatus();
+  //     // emit game status
+  //     io.to(roomInstance.roomId).emit("gameStatus", {
+  //       gameStatus,
+  //     });
+  //     socket.broadcast
+  //       .to(roomInstance.roomId)
+  //       .emit("gameStatus", { gameStatus });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // });
 
   socket.on("disconnect", () => {
     console.log("in disconnect");
@@ -198,7 +211,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => {
+server.listen(process.env.PORT || 4000, () => {
   console.log("server is running");
 });
 
