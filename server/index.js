@@ -60,10 +60,10 @@ io.on("connection", (socket) => {
     if (roomInstance) {
       const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      if (gameStatus === "in progress") {
-        socket.emit("pleaseWait");
-      }
-      // socket.emit("gameStatus", { gameStatus });
+      // if (gameStatus === "in progress") {
+      //   socket.emit("pleaseWait");
+      // }
+      socket.emit("gameStatus", { gameStatus });
       userJoiningRoom = user;
     } else {
       console.log("creating new room");
@@ -154,6 +154,8 @@ io.on("connection", (socket) => {
   socket.on("gameResultsSent", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameScore(data);
+    console.log(data);
+
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
     if (users.length === allScores.length) {
