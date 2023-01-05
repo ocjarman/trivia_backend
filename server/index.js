@@ -116,6 +116,7 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    roomInstance.clearScores();
 
     let usersInRoom = roomInstance.getAllUsers();
     if (usersInRoom.length > 1) {
@@ -146,10 +147,11 @@ io.on("connection", (socket) => {
     roomInstance.setGameScore(data);
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
-    console.log(allScores);
+
     if (users.length === allScores.length) {
       socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
       io.to(roomInstance.roomId).emit("allScores", allScores);
+      console.log("receiving game scores", allScores);
 
       roomInstance.setGameStatus("ready");
       const gameStatus = roomInstance.getGameStatus();
@@ -176,8 +178,6 @@ io.on("connection", (socket) => {
       socket.broadcast
         .to(roomInstance.roomId)
         .emit("gameStatus", { gameStatus });
-
-      roomInstance.clearScores();
     } catch (err) {
       console.log(err);
     }
