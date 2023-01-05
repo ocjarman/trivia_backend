@@ -166,22 +166,22 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("restartGame", (data) => {
-    try {
-      let roomInstance = roomManager.findRoom(data.roomId);
-      roomInstance.setGameStatus("ready");
-      const gameStatus = roomInstance.getGameStatus();
-      // emit game status
-      io.to(roomInstance.roomId).emit("gameStatus", {
-        gameStatus,
-      });
-      socket.broadcast
-        .to(roomInstance.roomId)
-        .emit("gameStatus", { gameStatus });
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  // socket.on("restartGame", (data) => {
+  //   try {
+  //     let roomInstance = roomManager.findRoom(data.roomId);
+  //     roomInstance.setGameStatus("ready");
+  //     const gameStatus = roomInstance.getGameStatus();
+  //     // emit game status
+  //     io.to(roomInstance.roomId).emit("gameStatus", {
+  //       gameStatus,
+  //     });
+  //     socket.broadcast
+  //       .to(roomInstance.roomId)
+  //       .emit("gameStatus", { gameStatus });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // });
 
   socket.on("disconnect", () => {
     console.log("in disconnect");
