@@ -177,7 +177,7 @@ io.on("connection", (socket) => {
         .to(roomInstance.roomId)
         .emit("gameStatus", { gameStatus });
 
-      // roomInstance.clearScores();
+      // add back roominstance.clearscores( if needed)
     } catch (err) {
       console.log(err);
     }
