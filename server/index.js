@@ -141,21 +141,21 @@ io.on("connection", (socket) => {
       });
 
       // setinterval 60 seconds, and then set game to 'not in progress' again
-      const gameOver = () => {
-        roomInstance.setGameStatus("ready");
-        const gameStatus = roomInstance.getGameStatus();
-        console.log("top of game over", gameStatus);
-        socket.broadcast
-          .to(roomInstance.roomId)
-          .emit("gameStatus", { gameStatus });
+      // const gameOver = () => {
+      //   roomInstance.setGameStatus("ready");
+      //   const gameStatus = roomInstance.getGameStatus();
+      //   console.log("top of game over", gameStatus);
+      //   socket.broadcast
+      //     .to(roomInstance.roomId)
+      //     .emit("gameStatus", { gameStatus });
 
-        io.to(roomInstance.roomId).emit("gameStatus", {
-          gameStatus,
-        });
-        console.log("times up");
-      };
+      //   io.to(roomInstance.roomId).emit("gameStatus", {
+      //     gameStatus,
+      //   });
+      //   console.log("times up");
+      // };
 
-      setTimeout(gameOver, 60000);
+      // setTimeout(gameOver, 60000);
       // set game status here?
     }
   });
@@ -163,7 +163,6 @@ io.on("connection", (socket) => {
   socket.on("gameResultsSent", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameScore(data);
-
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
     console.log(allScores);
@@ -171,6 +170,17 @@ io.on("connection", (socket) => {
       socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
       io.to(roomInstance.roomId).emit("allScores", {
         allScores,
+      });
+
+      roomInstance.setGameStatus("ready");
+      const gameStatus = roomInstance.getGameStatus();
+      console.log("top of game over", gameStatus);
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus });
+
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
       });
     }
   });
