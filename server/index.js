@@ -149,9 +149,7 @@ io.on("connection", (socket) => {
     console.log(allScores);
     if (users.length === allScores.length) {
       socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
-      io.to(roomInstance.roomId).emit("allScores", {
-        allScores,
-      });
+      io.to(roomInstance.roomId).emit("allScores", allScores);
 
       roomInstance.setGameStatus("ready");
       const gameStatus = roomInstance.getGameStatus();
