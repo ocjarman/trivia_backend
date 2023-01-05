@@ -117,6 +117,7 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
+
     let usersInRoom = roomInstance.getAllUsers();
     if (usersInRoom.length > 1) {
       let randomizedQuestions = generateNewQuestions(questions);
@@ -137,6 +138,7 @@ io.on("connection", (socket) => {
       const gameOver = () => {
         // roomInstance.setGameStatus("ready");
         const gameStatus = roomInstance.getGameStatus();
+        console.log("top of game over", gameStatus);
         socket.broadcast
           .to(roomInstance.roomId)
           .emit("gameStatus", { gameStatus });
@@ -147,14 +149,14 @@ io.on("connection", (socket) => {
         console.log("times up");
       };
 
-      setTimeout(gameOver, 60000);
+      setTimeout(gameOver, 20000);
+      // set game status here?
     }
   });
 
   socket.on("gameResultsSent", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameScore(data);
-    console.log(data);
 
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
@@ -166,10 +168,23 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("restartGame", () => {
-    let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    roomInstance.setGameStatus("ready");
-    roomInstance.clearScores();
+  socket.on("restartGame", (data) => {
+    try {
+      let roomInstance = roomManager.findRoom(data.roomId);
+      roomInstance.setGameStatus("ready");
+      const gameStatus = roomInstance.getGameStatus();
+      // emit game status
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
+      });
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus });
+
+      roomInstance.clearScores();
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   socket.on("disconnect", () => {
