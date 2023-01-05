@@ -131,12 +131,18 @@ io.on("connection", (socket) => {
         randomizedQuestions,
       });
 
-      // setting game status as 'in progress' so that when new user joins, they wait
-      roomInstance.setGameStatus("in progress");
+      let gameStatus = roomInstance.setGameStatus("in progress");
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus });
+
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
+      });
 
       // setinterval 60 seconds, and then set game to 'not in progress' again
       const gameOver = () => {
-        // roomInstance.setGameStatus("ready");
+        roomInstance.setGameStatus("ready");
         const gameStatus = roomInstance.getGameStatus();
         console.log("top of game over", gameStatus);
         socket.broadcast
@@ -160,6 +166,7 @@ io.on("connection", (socket) => {
 
     const allScores = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
+    console.log(allScores);
     if (users.length === allScores.length) {
       socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
       io.to(roomInstance.roomId).emit("allScores", {
