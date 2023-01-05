@@ -155,7 +155,7 @@ io.on("connection", (socket) => {
         console.log("times up");
       };
 
-      setTimeout(gameOver, 20000);
+      setTimeout(gameOver, 60000);
       // set game status here?
     }
   });
