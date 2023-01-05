@@ -60,9 +60,7 @@ io.on("connection", (socket) => {
     if (roomInstance) {
       const gameStatus = roomInstance.getGameStatus();
       const { user } = roomInstance.addUser({ id: socket.id, name, roomId });
-      // if (gameStatus === "in progress") {
-      //   socket.emit("pleaseWait");
-      // }
+      // will need this for implementing user waiting room while other players finish game
       socket.emit("gameStatus", { gameStatus });
       userJoiningRoom = user;
     } else {
@@ -71,6 +69,7 @@ io.on("connection", (socket) => {
         { id: socket.id, name, roomId },
         roomId
       );
+      roomInstance.setGameStatus("ready");
       userJoiningRoom = roomInstance.getUser(socket.id);
     }
 
@@ -139,24 +138,6 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
       });
-
-      // setinterval 60 seconds, and then set game to 'not in progress' again
-      // const gameOver = () => {
-      //   roomInstance.setGameStatus("ready");
-      //   const gameStatus = roomInstance.getGameStatus();
-      //   console.log("top of game over", gameStatus);
-      //   socket.broadcast
-      //     .to(roomInstance.roomId)
-      //     .emit("gameStatus", { gameStatus });
-
-      //   io.to(roomInstance.roomId).emit("gameStatus", {
-      //     gameStatus,
-      //   });
-      //   console.log("times up");
-      // };
-
-      // setTimeout(gameOver, 60000);
-      // set game status here?
     }
   });
 
