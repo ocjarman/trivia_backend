@@ -116,22 +116,23 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    roomInstance.clearScores();
 
-    let usersInRoom = roomInstance.getAllUsers();
-    if (usersInRoom.length > 1) {
-      let randomizedQuestions = generateNewQuestions(questions);
+    let randomizedQuestions = generateNewQuestions(questions);
 
-      //emit to all that the game is going to begin in 1 minute, set timer
-      socket.broadcast
-        .to(roomInstance.roomId)
-        .emit("otherPlayerStartedGame", { randomizedQuestions });
+    roomInstance.setGameStatus("started");
+    let gameStatus = roomInstance.getGameStatus();
+    socket.broadcast
+      .to(roomInstance.roomId)
+      .emit("gameStatus", { gameStatus, randomizedQuestions });
+    io.to(roomInstance.roomId).emit("gameStatus", {
+      gameStatus,
+      randomizedQuestions,
+    });
 
-      io.to(roomInstance.roomId).emit("gameStarted", {
-        randomizedQuestions,
-      });
-
-      let gameStatus = roomInstance.setGameStatus("in progress");
+    const gameInProgress = () => {
+      console.log("game in progress");
+      roomInstance.setGameStatus("in progress");
+      let gameStatus = roomInstance.getGameStatus();
       socket.broadcast
         .to(roomInstance.roomId)
         .emit("gameStatus", { gameStatus });
@@ -139,29 +140,37 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
       });
-    }
+    };
+
+    // set a timer for 10 seconds, and then set the game status to in progress
+    setTimeout(gameInProgress, 5000); /**this will change to 10 seconds */
+
+    const gameOver = () => {
+      console.log("game is over");
+      roomInstance.setGameStatus("results");
+    };
+
+    setTimeout(gameOver, 20000); /**this will change to 60 seconds */
   });
 
-  socket.on("gameResultsSent", (data) => {
+  socket.on("sendingGameResults", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameScore(data);
-    const allScores = roomInstance.getAllScores();
+    const results = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
 
-    if (users.length === allScores.length) {
-      socket.broadcast.to(roomInstance.roomId).emit("allScores", { allScores });
-      io.to(roomInstance.roomId).emit("allScores", allScores);
-      console.log("receiving game scores", allScores);
-
-      roomInstance.setGameStatus("ready");
+    if (users.length === results.length) {
+      console.log(results);
+      roomInstance.setGameStatus("results");
       const gameStatus = roomInstance.getGameStatus();
-      console.log("top of game over", gameStatus);
+
       socket.broadcast
         .to(roomInstance.roomId)
-        .emit("gameStatus", { gameStatus });
+        .emit("gameStatus", { gameStatus, results });
 
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
+        results,
       });
     }
   });
