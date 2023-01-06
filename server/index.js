@@ -116,8 +116,13 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-
     let randomizedQuestions = generateNewQuestions(questions);
+    let scoreStorage = roomInstance.getAllScores();
+    if (scoreStorage.length > 0) {
+      roomInstance.clearScores();
+    }
+
+    console.log(scoreStorage);
 
     roomInstance.setGameStatus("started");
     let gameStatus = roomInstance.getGameStatus();
@@ -155,42 +160,41 @@ io.on("connection", (socket) => {
 
   socket.on("sendingGameResults", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    console.log(data);
     roomInstance.setGameScore(data);
-    const results = roomInstance.getAllScores();
+    const newResults = roomInstance.getAllScores();
     const users = roomInstance.getAllUsers();
 
-    if (users.length === results.length) {
-      console.log(results);
+    if (users.length === newResults.length) {
       roomInstance.setGameStatus("results");
       const gameStatus = roomInstance.getGameStatus();
 
       socket.broadcast
         .to(roomInstance.roomId)
-        .emit("gameStatus", { gameStatus, results });
+        .emit("gameStatus", { gameStatus, newResults });
 
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
-        results,
+        newResults,
       });
     }
   });
 
-  // socket.on("restartGame", (data) => {
-  //   try {
-  //     let roomInstance = roomManager.findRoom(data.roomId);
-  //     roomInstance.setGameStatus("ready");
-  //     const gameStatus = roomInstance.getGameStatus();
-  //     // emit game status
-  //     io.to(roomInstance.roomId).emit("gameStatus", {
-  //       gameStatus,
-  //     });
-  //     socket.broadcast
-  //       .to(roomInstance.roomId)
-  //       .emit("gameStatus", { gameStatus });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // });
+  socket.on("resetGame", () => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    const previousResults = roomInstance.getAllScores();
+    roomInstance.setGameStatus("ready");
+    const gameStatus = roomInstance.getGameStatus();
+
+    socket.broadcast
+      .to(roomInstance.roomId)
+      .emit("gameStatus", { gameStatus, previousResults });
+
+    io.to(roomInstance.roomId).emit("gameStatus", {
+      gameStatus,
+      previousResults,
+    });
+  });
 
   socket.on("disconnect", () => {
     console.log("in disconnect");
