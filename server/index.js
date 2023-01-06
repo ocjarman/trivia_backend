@@ -155,7 +155,19 @@ io.on("connection", (socket) => {
       roomInstance.setGameStatus("results");
     };
 
-    setTimeout(gameOver, 20000); /**this will change to 60 seconds */
+    setTimeout(gameOver, 30000); /**this will change to 60 seconds */
+  });
+
+  socket.on("needNextQuestion", () => {
+    let roomInstance = roomManager.getRoomBySocketId(socket.id);
+    console.log("hitting need for next q");
+    const nextQuestion = () => {
+      socket.broadcast.to(roomInstance.roomId).emit("sendingNextQuestion");
+      io.to(roomInstance.roomId).emit("sendingNextQuestion");
+      console.log("sending...");
+    };
+
+    setTimeout(nextQuestion, 4000);
   });
 
   socket.on("sendingGameResults", (data) => {
