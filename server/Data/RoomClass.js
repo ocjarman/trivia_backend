@@ -3,7 +3,7 @@ class Room {
     this.users = [firstUser];
     this.roomId = roomId;
     this.gameStatus = gameStatus;
-    this.gameScores = [];
+    this.finalScores = [];
     this.questions = [];
     this.userScores = { [firstUser.id]: 0 };
     this.userAnswers = [];
@@ -51,11 +51,11 @@ class Room {
   setGameStatus(status) {
     this.gameStatus = status;
   }
-  setGameScore(gameData) {
-    this.gameScores.push(gameData);
+  setFinalScores(data) {
+    this.finalScores.push(data);
   }
-  getAllScores() {
-    return this.gameScores;
+  getFinalScores() {
+    return this.finalScores;
     // return this.gameScores.sort(
     //   (a, b) => parseFloat(b.score) - parseFloat(a.score)
     // );
@@ -66,22 +66,19 @@ class Room {
   getGameQuestions() {
     return this.questions;
   }
-  setUserScore(userId, score) {
-    this.userScores = { user: userId, score: score };
-  }
-  getUserScore() {
-    return this.userScores;
-  }
 
-  setUserAnswers(question, answer, score) {
+  setUserAnswers(userId, question, answer, score) {
+    let user = this.users.find((user) => user.id === userId);
     this.userAnswers.push({
+      user: user.id,
       questionId: question.id,
       answer: answer,
       score: score,
     });
   }
-  getUserAnswers() {
-    return this.userAnswers;
+  getUserAnswers(userId) {
+    let user = this.users.find((user) => user.id === userId);
+    return this.userAnswers.filter((answers) => answers.user === userId);
   }
 
   clearScores() {
