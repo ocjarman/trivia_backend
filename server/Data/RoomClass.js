@@ -53,12 +53,12 @@ class Room {
   }
   setGameScore(gameData) {
     this.gameScores.push(gameData);
-    // this.gameScores = this.gameScores
   }
   getAllScores() {
-    return this.gameScores.sort(
-      (a, b) => parseFloat(b.score) - parseFloat(a.score)
-    );
+    return this.gameScores;
+    // return this.gameScores.sort(
+    //   (a, b) => parseFloat(b.score) - parseFloat(a.score)
+    // );
   }
   setGameQuestions(randomQuestions) {
     this.questions = randomQuestions;

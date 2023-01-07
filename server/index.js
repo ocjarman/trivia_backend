@@ -157,7 +157,6 @@ io.on("connection", (socket) => {
 
     const nextQuestion = () => {
       console.log("going to next q");
-      socket.broadcast.to(roomInstance.roomId).emit("navigatingToNextQ");
       io.to(roomInstance.roomId).emit("navigatingToNextQ");
     };
 
@@ -168,14 +167,30 @@ io.on("connection", (socket) => {
       console.log("game is over");
       roomInstance.setGameStatus("results");
       let previouslyAnswered = roomInstance.getUserAnswers();
-      const user = roomInstance.getUser(socket.id);
-      const finalScore = previouslyAnswered.reduce(
-        (sum, nextItem) => (sum += nextItem.score),
-        0
-      );
-      console.log({ finalScore });
-      roomInstance.setGameScore({ user: user, score: finalScore });
-      console.log(previouslyAnswered);
+      const allUsers = roomInstance.getAllUsers();
+
+      allUsers.forEach((user) => {
+        const finalScore = previouslyAnswered.reduce(
+          (sum, nextItem) => (sum += nextItem.score),
+          0
+        );
+        console.log({ finalScore });
+        // setting users individual game score, sending it to allscores
+        roomInstance.setGameScore({ user: user.name, score: finalScore });
+      });
+      let allGameScores = roomInstance.getAllScores();
+
+      let gameStatus = roomInstance.getGameStatus();
+      console.log(gameStatus);
+
+      socket.broadcast
+        .to(roomInstance.roomId)
+        .emit("gameStatus", { gameStatus, allGameScores });
+
+      io.to(roomInstance.roomId).emit("gameStatus", {
+        gameStatus,
+        allGameScores,
+      });
     };
 
     setTimeout(gameOver, 20000); /**this will change to 60 seconds */
