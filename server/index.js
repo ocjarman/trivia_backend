@@ -117,6 +117,8 @@ io.on("connection", (socket) => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     let randomizedQuestions = generateNewQuestions(questions);
+    roomInstance.setGameQuestions(randomizedQuestions);
+
     let scoreStorage = roomInstance.getAllScores();
     if (scoreStorage.length > 0) {
       roomInstance.clearScores();
@@ -145,6 +147,18 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
       });
+      let nextQInterval = setInterval(nextQuestion, 3000);
+
+      socket.on("clearInterval", () => {
+        clearInterval(nextQInterval);
+        console.log("cleared!");
+      });
+    };
+
+    const nextQuestion = () => {
+      console.log("going to next q");
+      socket.broadcast.to(roomInstance.roomId).emit("navigatingToNextQ");
+      io.to(roomInstance.roomId).emit("navigatingToNextQ");
     };
 
     // set a timer for 10 seconds, and then set the game status to in progress
@@ -153,21 +167,57 @@ io.on("connection", (socket) => {
     const gameOver = () => {
       console.log("game is over");
       roomInstance.setGameStatus("results");
+      let previouslyAnswered = roomInstance.getUserAnswers();
+      const user = roomInstance.getUser(socket.id);
+      const finalScore = previouslyAnswered.reduce(
+        (sum, nextItem) => (sum += nextItem.score),
+        0
+      );
+      console.log({ finalScore });
+      roomInstance.setGameScore({ user: user, score: finalScore });
+      console.log(previouslyAnswered);
     };
 
-    setTimeout(gameOver, 30000); /**this will change to 60 seconds */
+    setTimeout(gameOver, 20000); /**this will change to 60 seconds */
   });
 
-  socket.on("needNextQuestion", () => {
+  socket.on("sendAnswer", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    console.log("hitting need for next q");
-    const nextQuestion = () => {
-      socket.broadcast.to(roomInstance.roomId).emit("sendingNextQuestion");
-      io.to(roomInstance.roomId).emit("sendingNextQuestion");
-      console.log("sending...");
+    let questions = roomInstance.getGameQuestions();
+
+    // find the question we're checking the answer for
+    let currentQuestion = questions.filter(
+      (question) => question.id === data.questionId
+    );
+
+    let previouslyAnswered = roomInstance.getUserAnswers();
+
+    let found = previouslyAnswered.find((question) => {
+      return question.questionId === data.questionId;
+    });
+
+    const checkScore = () => {
+      let score;
+      if (currentQuestion[0].correct_answer === data.selectedAnswer) {
+        score = 1;
+      } else {
+        score = 0;
+      }
+      return score;
     };
 
-    setTimeout(nextQuestion, 4000);
+    if (found !== undefined) {
+      if (found.answer !== data.selectedAnswer) {
+        found.answer = data.selectedAnswer;
+        found.score = checkScore();
+      }
+    } else {
+      roomInstance.setUserAnswers(
+        currentQuestion[0],
+        data.selectedAnswer,
+        checkScore()
+      );
+    }
   });
 
   socket.on("sendingGameResults", (data) => {

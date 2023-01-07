@@ -4,6 +4,9 @@ class Room {
     this.roomId = roomId;
     this.gameStatus = gameStatus;
     this.gameScores = [];
+    this.questions = [];
+    this.userScores = { [firstUser.id]: 0 };
+    this.userAnswers = [];
   }
 
   addUser({ id, name, roomId }) {
@@ -57,6 +60,30 @@ class Room {
       (a, b) => parseFloat(b.score) - parseFloat(a.score)
     );
   }
+  setGameQuestions(randomQuestions) {
+    this.questions = randomQuestions;
+  }
+  getGameQuestions() {
+    return this.questions;
+  }
+  setUserScore(userId, score) {
+    this.userScores = { user: userId, score: score };
+  }
+  getUserScore() {
+    return this.userScores;
+  }
+
+  setUserAnswers(question, answer, score) {
+    this.userAnswers.push({
+      questionId: question.id,
+      answer: answer,
+      score: score,
+    });
+  }
+  getUserAnswers() {
+    return this.userAnswers;
+  }
+
   clearScores() {
     this.gameScores = [];
   }
