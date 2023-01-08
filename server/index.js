@@ -116,17 +116,20 @@ io.on("connection", (socket) => {
   socket.on("startGame", () => {
     console.log("starting game");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-    let randomizedQuestions = generateNewQuestions(questions);
-    roomInstance.setGameQuestions(randomizedQuestions);
+
+    let newQuestions = generateNewQuestions(questions);
+    roomInstance.setGameQuestions(newQuestions);
 
     let scoreStorage = roomInstance.getFinalScores();
     if (scoreStorage.length > 0) {
-      roomInstance.clearScores();
+      scoreStorage = roomInstance.clearScores();
     }
 
-    console.log(scoreStorage);
+    console.log({ scoreStorage });
 
     roomInstance.setGameStatus("started");
+    let randomizedQuestions = roomInstance.getGameQuestions();
+    console.log({ randomizedQuestions });
     let gameStatus = roomInstance.getGameStatus();
     socket.broadcast
       .to(roomInstance.roomId)
@@ -147,12 +150,11 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
       });
-      let nextQInterval = setInterval(nextQuestion, 3000);
-
-      socket.on("clearInterval", () => {
-        clearInterval(nextQInterval);
-        console.log("cleared!");
-      });
+      setTimeout(nextQuestion, 3000);
+      setTimeout(nextQuestion, 6000);
+      setTimeout(nextQuestion, 9000);
+      setTimeout(nextQuestion, 12000);
+      setTimeout(nextQuestion, 15000);
     };
 
     const nextQuestion = () => {
@@ -183,7 +185,6 @@ io.on("connection", (socket) => {
       });
       let allGameScores = roomInstance.getFinalScores();
 
-      console.log({ allGameScores });
       let gameStatus = roomInstance.getGameStatus();
       console.log(gameStatus);
 
@@ -195,8 +196,6 @@ io.on("connection", (socket) => {
         gameStatus,
         allGameScores,
       });
-
-      roomInstance.clearScores();
     };
 
     setTimeout(gameOver, 20000); /**this will change to 60 seconds */
@@ -244,6 +243,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("resetGame", () => {
+    console.log("RESETTING GAME");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     roomInstance.setGameStatus("ready");
     const gameStatus = roomInstance.getGameStatus();

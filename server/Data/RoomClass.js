@@ -82,7 +82,7 @@ class Room {
   }
 
   clearScores() {
-    this.gameScores = [];
+    this.finalScores = [];
   }
 }
 
