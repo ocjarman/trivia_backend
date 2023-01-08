@@ -150,26 +150,28 @@ io.on("connection", (socket) => {
       io.to(roomInstance.roomId).emit("gameStatus", {
         gameStatus,
       });
-      setTimeout(nextQuestion, 3000);
-      setTimeout(nextQuestion, 6000);
-      setTimeout(nextQuestion, 9000);
-      setTimeout(nextQuestion, 12000);
-      setTimeout(nextQuestion, 15000);
+      // after every 10 seconds, hit next question
+      setTimeout(nextQuestion, 10000);
+      setTimeout(nextQuestion, 20000);
+      setTimeout(nextQuestion, 30000);
+      setTimeout(nextQuestion, 40000);
+      setTimeout(nextQuestion, 50000);
     };
 
     const nextQuestion = () => {
-      console.log("going to next q");
       io.to(roomInstance.roomId).emit("navigatingToNextQ");
     };
 
-    // set a timer for 10 seconds, and then set the game status to in progress
-    setTimeout(gameInProgress, 5000); /**this will change to 10 seconds */
+    // after 10 seconds, set the game status to in progress
+    setTimeout(gameInProgress, 10000);
 
     const gameOver = () => {
       console.log("game is over");
       roomInstance.setGameStatus("results");
       const allUsers = roomInstance.getAllUsers();
 
+      // for each user, find their previous reponses and tally the score they acquired
+      // from each question. set that as their final score
       allUsers.forEach((user) => {
         let previouslyAnswered = roomInstance.getUserAnswers(user.id);
         const finalScore = previouslyAnswered.reduce(
@@ -183,10 +185,10 @@ io.on("connection", (socket) => {
           score: finalScore,
         });
       });
-      let allGameScores = roomInstance.getFinalScores();
 
+      // get all scores to send back to frontend
+      let allGameScores = roomInstance.getFinalScores();
       let gameStatus = roomInstance.getGameStatus();
-      console.log(gameStatus);
 
       socket.broadcast
         .to(roomInstance.roomId)
@@ -198,9 +200,11 @@ io.on("connection", (socket) => {
       });
     };
 
-    setTimeout(gameOver, 20000); /**this will change to 60 seconds */
+    setTimeout(gameOver, 60000); /**this will change to 60 seconds */
   });
 
+  // this listener collects data from each answer response for each user and saves it on the backend
+  // if a user changes their answer, it accounts for that change and updates that answer choice and score
   socket.on("sendAnswer", (data) => {
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
     let questions = roomInstance.getGameQuestions();
@@ -213,6 +217,7 @@ io.on("connection", (socket) => {
 
     let previouslyAnswered = roomInstance.getUserAnswers(user.id);
 
+    // see if they already answered the q, and then update their response if so
     let found = previouslyAnswered.find((question) => {
       return question.questionId === data.questionId;
     });
@@ -227,12 +232,14 @@ io.on("connection", (socket) => {
       return score;
     };
 
+    // if they already answered the q, update their response & score
     if (found !== undefined) {
       if (found.answer !== data.selectedAnswer) {
         found.answer = data.selectedAnswer;
         found.score = checkScore();
       }
     } else {
+      // if not already answered the q, save the response data
       roomInstance.setUserAnswers(
         user.id,
         currentQuestion[0],
@@ -249,7 +256,6 @@ io.on("connection", (socket) => {
     const gameStatus = roomInstance.getGameStatus();
 
     socket.broadcast.to(roomInstance.roomId).emit("gameStatus", { gameStatus });
-
     io.to(roomInstance.roomId).emit("gameStatus", {
       gameStatus,
     });
@@ -258,7 +264,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("in disconnect");
     let roomInstance = roomManager.getRoomBySocketId(socket.id);
-
     // backend was breaking if refreshing on home page bc theres no room instance to get the user from
     if (roomInstance !== undefined) {
       const foundUser = roomInstance.getUser(socket.id);
