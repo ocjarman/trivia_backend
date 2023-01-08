@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // this is the origin of the REACT app
-    origin: "https://ocjarman.github.io/trivia_frontend/",
+    origin: "https://ocjarman.github.io",
     methods: ["GET", "POST"],
     credentials: true,
   },
