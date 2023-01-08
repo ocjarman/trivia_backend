@@ -22,6 +22,7 @@ const io = new Server(server, {
     // this is the origin of the REACT app
     origin: "https://ocjarman.github.io/trivia_frontend/",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 // Set up middleware
