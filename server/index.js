@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // this is the origin of the REACT app
-    origin: "https://ocjarman.github.io",
+    origin: ["https://ocjarman.github.io", "http://localhost:3000"],
     methods: ["GET", "POST"],
     credentials: true,
   },
